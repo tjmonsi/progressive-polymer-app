@@ -1,0 +1,32 @@
+{
+  "name": "progressive-polymer-app",
+  "version": "1.0.0",
+  "description": "A take on creating a progressive single page app using firebase and polymer",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "babel-eslint": "^7.2.3",
+    "eslint-plugin-html": "^3.2.0",
+    "gulp": "^3.9.1",
+    "standard": "^10.0.3"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "eslint-plugin-html": "^3.2.0",
+    "firebase-tools": "^3.9.2",
+    "gulp": "^3.9.1",
+    "standard": "^10.0.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tjmonsi/progressive-polymer-app.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tjmonsi/progressive-polymer-app/issues"
+  },
+  "homepage": "https://github.com/tjmonsi/progressive-polymer-app#readme"
+}
