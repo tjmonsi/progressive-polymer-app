@@ -1,8 +1,8 @@
 const express = require('express')
 // const path = require('path')
-const app = express()
+const app = require('../essentials')(express())
 
-app.get('/api/test', (req, res) => {
+app.get('/api/', (req, res) => {
   res.json({
     ok: true
   })

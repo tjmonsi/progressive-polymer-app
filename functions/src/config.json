@@ -6,13 +6,26 @@
     "baseHref": "/",
     "twitter": "@gdgphilippines",
     "image": "https://devfestph.firebaseapp.com/images/header.png",
-    "analytics": "UA-78413383-2",
+    "analytics": "",
     "firebaseVersion": "4.2.0",
     "database": "dev",
     "waitBeforeFetchingSameURLInRest": 60,
     "sentryUrl": "https://85d1091a410948caa823a5230bd0dbcf@sentry.io/204253",
     "appVersion": "0.0.1",
     "firebaseConfig": []
+  },
+  "routing": {
+    "/": "src/pages/index",
+    "/login": "src/pages/login",
+    "/test": "src/pages/test",
+    "/authorized": {
+      "page": "src/pages/authorized",
+      "auth": "validate-firebase-id-token"
+    }
+  },
+  "httpCodes": {
+    "unauthorized": "src/pages/unauthorized",
+    "notfound": "src/pages/not-found"
   },
   "serviceWorker": {
     "globIgnores": [],
