@@ -28,9 +28,13 @@ module.exports = function (config) {
   routes.forEach(item => {
     const auth = item.value.auth || 'no-validation'
     const page = item.value.page || item.value
+    const header = item.value.header || config.default.header
+    const footer = item.value.footer || config.default.footer
     router.get(item.route, middleware[auth], (req, res) => {
       consolidate.handlebars('./core/dist/index.hbs', Object.assign({}, config, { partials: {
-        page: `../../${page}/template`
+        header: `../../${header}/template`,
+        page: `../../${page}/template`,
+        footer: `../../${footer}/template`
       }}), (err, html) => {
         if (err) {
           return res.status(500).send(err)

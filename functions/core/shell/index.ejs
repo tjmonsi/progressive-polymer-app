@@ -60,11 +60,11 @@
     <script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver,fetch,Promise,Array.prototype.findIndex,Object.defineProperty,Map,Set,CustomEvent,performance.now,Object.entries&flags=gated"></script>
     <script>
       Object.defineProperty(window, 'App', { value: window.App || {} })
-      Object.defineProperty(App, '_dataRestStaleTime', { value: {{app.waitBeforeFetchingSameURLInRest}} })
-      Object.defineProperty(App, '_build', { value: App.__build || '{{build}}' })
-      Object.defineProperty(App, '_version', { value: App.__version || '{{version}}' })
-      Object.defineProperty(App, '_database', { value: App.__database || '{{database}}' })
-      Object.defineProperty(App, '_analytics', { value: App.__analytics || '{{app.analytics}}' })
+      Object.defineProperty(App, '_dataRestStaleTime', { value: {{build.waitBeforeFetchingSameURLInRest}} })
+      Object.defineProperty(App, '_build', { value: App.__build || '{{build.name}}' })
+      Object.defineProperty(App, '_version', { value: App.__version || '{{build.version}}' })
+      Object.defineProperty(App, '_database', { value: App.__database || '{{build.database}}' })
+      Object.defineProperty(App, '_analytics', { value: App.__analytics || '{{build.analytics}}' })
 
       if (window.performance) {
         window.globalStart = window.globalStart || performance.now()
@@ -143,9 +143,17 @@
     </script>
     {{/if}}
 
-    <app-shell>
-      {{> page }}
-    </app-shell>
+    <progressive-shell>
+      <progressive-header>
+        {{> header }}
+      </progressive-header>
+      <progressive-page>
+        {{> page }}
+      </progressive-page>
+      <progress-footer>
+        {{> footer }}
+      </progress-footer>
+    </progressive-shell>
     <!-- Built with love using Polymer Starter Kit -->
     <script>
       // Load and register pre-caching Service Worker
