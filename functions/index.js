@@ -7,6 +7,7 @@ const config = require('./src/config.json')
 
 var app = express()
 
+app.use(express.static('core/dist'))
 app.use('/', require('./core/app')(config))
 
 exports.app = functions.https.onRequest(app)
