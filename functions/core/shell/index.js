@@ -71,15 +71,15 @@ class ProgressiveShell extends QueryParamsMixin(LocationMixin(Polymer.PropertyAc
     var pathFound = false
     Object.entries(fragments.routing).forEach(route => {
       if (pathFound) return
-      var namedMatches = {}
+      var params = {}
       const keys = []
       const re = pathToRegexp(route[0], keys)
       const exec = re.exec(path)
 
       if (exec) {
-        namedMatches = {}
+        params = {}
         for (var j = 0; j < keys.length; j++) {
-          namedMatches[keys[j].name] = exec[j + 1]
+          params[keys[j].name] = exec[j + 1]
         }
 
         pathFound = true
@@ -94,50 +94,71 @@ class ProgressiveShell extends QueryParamsMixin(LocationMixin(Polymer.PropertyAc
 
         const newPath = path.indexOf('?') < 0 ? path + '?data=true' : path + '&data=true'
 
-        Promise.all(
-          [
-            fragments.routing[route[0]].page(),
-            fragments.routing[route[0]].header(),
-            fragments.routing[route[0]].footer()
-          ]
-          .concat([
-            fetch(newPath).then(response => { return response.json() })
+        var promises = [
+          fragments.routing[route[0]].page(),
+          fragments.routing[route[0]].header(),
+          fragments.routing[route[0]].footer(),
+          fetch(newPath).then(response => { return response.json() }),
+          fragments.httpCodes.unauthorized.page()
+        ]
+        .concat(partials.map(i => (i.partial)))
+
+        if (this.currentRoute) {
+          promises = promises.concat([
+            fragments.routing[this.currentRoute].page(),
+            fragments.routing[this.currentRoute].header(),
+            fragments.routing[this.currentRoute].footer()
           ])
-          .concat([
-            fragments.httpCodes.unauthorized.page()
-          ])
-          .concat(partials.map(i => (i.partial)))
-        )
+        }
+
+        Promise.all(promises)
         .then(result => {
           var page = result[0]
           var header = result[1]
           var footer = result[2]
           var json = result[3]
           var unauthorized = result[4]
-          var partialResults = result.slice(5, result.length)
+          var partialResults = result.slice(5, partials.length + 5)
+
+          if (this.currentRoute && this.currentRoute !== route[0]) {
+            var oldPage = result[result.length - 3]
+            var oldHeader = result[result.length - 2]
+            var oldFooter = result[result.length - 1]
+
+            if (oldPage.disconnectedCallback) oldPage.disconnectedCallback()
+            if (oldHeader !== header && oldHeader.disconnectedCallback) oldHeader.disconnectedCallback()
+            if (oldFooter !== footer && oldFooter.disconnectedCallback) oldFooter.disconnectedCallback()
+          }
+
+          json.data = json.data || {}
+          json.data.params = params
+          json.data.queryParams = this.paramsObject
 
           if (this.path === path) {
-            if (json.status === 200) {
-              this._renderPage(page.template, json.data)
-            } else if (json.status === 403) {
-              this._renderPage(unauthorized.template, json.data)
+            if (json.status === 401) {
+              page = unauthorized
             }
+            this._renderPage(page.template, json.data)
 
             for (var i in partials) {
               if (partials[i].name === 'header') {
                 if (header === 'default') {
-                  this._renderPartial(partials[i].name, partialResults[i].template, json.data)
-                } else {
-                  this._renderPartial(partials[i].name, header.template, json.data)
+                  header = partialResults[i]
                 }
+                this._renderPartial(partials[i].name, header.template, json.data)
               } else if (partials[i].name === 'footer') {
                 if (footer === 'default') {
-                  this._renderPartial(partials[i].name, partialResults[i].template, json.data)
-                } else {
-                  this._renderPartial(partials[i].name, footer.template, json.data)
+                  footer = partialResults[i]
                 }
+                this._renderPartial(partials[i].name, footer.template, json.data)
               }
             }
+
+            if (page.connectedCallback) page.connectedCallback()
+            if (header.connectedCallback) header.connectedCallback()
+            if (footer.connectedCallback) footer.connectedCallback()
+
+            this.currentRoute = route[0]
           }
         })
       }

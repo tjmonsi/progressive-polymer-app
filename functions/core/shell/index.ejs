@@ -60,6 +60,7 @@
     <script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver,fetch,Promise,Array.prototype.findIndex,Object.defineProperty,Map,Set,CustomEvent,performance.now,Object.entries&flags=gated"></script>
     <script>
       Object.defineProperty(window, 'App', { value: window.App || {} })
+      Object.defineProperty(App, 'Page', { value: App.Page || {} })
       Object.defineProperty(App, '_build', { value: App.__build || '{{build.name}}' })
       Object.defineProperty(App, '_version', { value: App.__version || '{{build.version}}' })
       Object.defineProperty(App, '_database', { value: App.__database || '{{build.database}}' })

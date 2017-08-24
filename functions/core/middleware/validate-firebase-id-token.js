@@ -10,7 +10,7 @@ const renderUnAuthorized = (req, res) => {
   const pageName = page.split('/')[page.split('/').length - 1]
   const footerName = footer.split('/')[footer.split('/').length - 1]
 
-  renderPage(req, res, 403, req.query.fragment ? './core/shell/fragment.hbs' : './core/dist/index.hbs', config, {}, {
+  renderPage(req, res, 401, req.query.fragment ? './core/shell/fragment.hbs' : './core/dist/index.hbs', config, {}, {
     header: `../../${header}/${headerName}`,
     page: `../../${page}/${pageName}`,
     footer: `../../${footer}/${footerName}`
