@@ -24,7 +24,7 @@
       If deploying to a non-root path, replace href="/" with the full path to the project root.
       For example: href="/polymer-starter-kit/relative-path-example/"
     -->
-    <base href="{{app.baseHref}}">
+    <base href="{{build.baseHref}}">
 
     <link rel="icon" href="images/favicon.ico">
 
@@ -60,7 +60,6 @@
     <script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver,fetch,Promise,Array.prototype.findIndex,Object.defineProperty,Map,Set,CustomEvent,performance.now,Object.entries&flags=gated"></script>
     <script>
       Object.defineProperty(window, 'App', { value: window.App || {} })
-      Object.defineProperty(App, '_dataRestStaleTime', { value: {{build.waitBeforeFetchingSameURLInRest}} })
       Object.defineProperty(App, '_build', { value: App.__build || '{{build.name}}' })
       Object.defineProperty(App, '_version', { value: App.__version || '{{build.version}}' })
       Object.defineProperty(App, '_database', { value: App.__database || '{{build.database}}' })
@@ -240,7 +239,7 @@
         document.addEventListener('WebComponentsReady', function componentsReady() {
           document.removeEventListener('WebComponentsReady', componentsReady, false);
           var script = document.createElement('script');
-          script.src = '<%= htmlWebpackPlugin.files.js[0] %>';
+          script.src = '<%= htmlWebpackPlugin.files.js[htmlWebpackPlugin.files.js.indexOf("bundle.js")] %>';
           var refScript = document.getElementsByTagName('script')[0];
           refScript.parentNode.insertBefore(script, refScript);
         }, false);

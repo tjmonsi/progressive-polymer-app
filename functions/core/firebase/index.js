@@ -14,12 +14,9 @@ const client = firebase.initializeApp({
 
 const server = admin.initializeApp(functions.config().firebase)
 
-apps.client = {
-  default: client
-}
-
-apps.admin = {
-  default: server
+apps.default = {
+  client,
+  server
 }
 
 module.exports = apps

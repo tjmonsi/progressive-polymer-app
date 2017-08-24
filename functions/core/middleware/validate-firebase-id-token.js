@@ -1,26 +1,32 @@
-const admin = require('../firebase').admin.default
-const consolidate = require('consolidate')
+const admin = require('../firebase').default.server
+const renderPage = require('../utils/render-page')
 const config = require('../../src/config.json')
 
-const renderUnAuthorized = (res) => {
-  consolidate.handlebars('./core/shell/index.hbs', Object.assign({}, config, { partials: {
-    page: `../../${config.httpCodes.unauthorized}`
-  }}), (err, html) => {
-    if (err) {
-      return res.status(500).send(err)
-    }
-    res.status(403).send(html)
+const renderUnAuthorized = (req, res) => {
+  const page = config.httpCodes.unauthorized
+  const header = config.default.header
+  const footer = config.default.footer
+  const headerName = header.split('/')[header.split('/').length - 1]
+  const pageName = page.split('/')[page.split('/').length - 1]
+  const footerName = footer.split('/')[footer.split('/').length - 1]
+
+  renderPage(req, res, 403, req.query.fragment ? './core/shell/fragment.hbs' : './core/dist/index.hbs', config, {}, {
+    header: `../../${header}/${headerName}`,
+    page: `../../${page}/${pageName}`,
+    footer: `../../${footer}/${footerName}`
   })
 }
 
 module.exports = (req, res, next) => {
+  console.log(req.cookies)
+  console.log(req.headers.authorization, req.cookies.__session, req.session.token)
   if ((!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) &&
-      !req.cookies.__session) {
+      !req.cookies.__session && !req.session.token) {
     console.error('No Firebase ID token was passed as a Bearer token in the Authorization header.',
         'Make sure you authorize your request by providing the following HTTP header:',
         'Authorization: Bearer <Firebase ID Token>',
         'or by passing a "__session" cookie.')
-    return renderUnAuthorized(res)
+    return renderUnAuthorized(req, res)
   }
 
   let idToken
@@ -28,10 +34,21 @@ module.exports = (req, res, next) => {
     console.log('Found "Authorization" header')
     // Read the ID Token from the Authorization header.
     idToken = req.headers.authorization.split('Bearer ')[1]
-  } else {
+  } else if (req.cookies.__session) {
     console.log('Found "__session" cookie')
     // Read the ID Token from cookie.
-    idToken = req.cookies.__session
+    // idToken = req.cookies.__session
+    try {
+      const cookie = JSON.parse(req.cookies.__session)
+      idToken = cookie.token
+    } catch (e) {
+      console.log(e)
+      idToken = req.cookies.__session
+    }
+  } else {
+    console.log('Found cookie session')
+    // Read the ID Token from cookie.
+    idToken = req.session.token
   }
   admin.auth().verifyIdToken(idToken).then(decodedIdToken => {
     console.log('ID Token correctly decoded', decodedIdToken)
@@ -39,6 +56,6 @@ module.exports = (req, res, next) => {
     next()
   }).catch(error => {
     console.error('Error while verifying Firebase ID token:', error)
-    return renderUnAuthorized(res)
+    return renderUnAuthorized(req, res)
   })
 }

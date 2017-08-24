@@ -28,7 +28,6 @@ module.exports = {
       to: 'bower_components/webcomponentsjs/[name].[ext]'
     }]),
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')

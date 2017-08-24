@@ -18,7 +18,8 @@
     "firebaseConfig": []
   },
   "default": {
-    "header": "src/partials/header"
+    "header": "src/partials/header",
+    "footer": "src/partials/footer"
   },
   "routing": {
     "/": "src/pages/index",
